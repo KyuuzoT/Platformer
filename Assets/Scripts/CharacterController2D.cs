@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CharacterController2D : MonoBehaviour
 {
@@ -52,16 +54,24 @@ public class CharacterController2D : MonoBehaviour
         filter2D.SetNormalAngle(filterMinAngle, filterMaxAngle);
         filter2D.useNormalAngle = true;
     }
-    // Start is called before the first frame update
+
+    private void OnEnable()
+    {
+        charAnimator.GetBehaviour<CharacterAnimationCallback>().DyingAction = OnDying;
+    }
+
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        CharacterMovement();
+        if (!State.Equals(CharacterAnimationState.Die))
+        {
+            CharacterMovement();
+        }
     }
 
     private void CharacterMovement()
@@ -86,9 +96,24 @@ public class CharacterController2D : MonoBehaviour
             if (jumpAxis > 0 && !State.Equals(CharacterAnimationState.Jump))
             {
                 velocity.y += Vector2.up.y * jumpAxis * jumpForce;
+            }
+        }
+
+
+        ChangeAnimationStateOnMovement(velocity.x);
+        rigidBody.velocity = velocity;
+    }
+
+
+    private void ChangeAnimationStateOnMovement(float horizontalVelocity)
+    {
+        if (IsGrounded)
+        {
+            if (!State.Equals(CharacterAnimationState.Jump))
+            {
                 State = CharacterAnimationState.Jump;
             }
-            else if (velocity.x == 0.0f)
+            if (horizontalVelocity.Equals(0.0f))
             {
                 State = CharacterAnimationState.Idle;
             }
@@ -101,15 +126,18 @@ public class CharacterController2D : MonoBehaviour
         {
             State = CharacterAnimationState.Jump;
         }
-
-        rigidBody.velocity = velocity;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.transform.tag.Equals("Obstacle"))
+        if (collision.transform.tag.Equals("Obstacle"))
         {
             State = CharacterAnimationState.Die;
         }
+    }
+
+    internal void OnDying()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

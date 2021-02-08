@@ -7,8 +7,9 @@ using UnityEngine.SceneManagement;
 public class CharacterController2D : MonoBehaviour
 {
     private static readonly int INT_STATE = Animator.StringToHash("State");
-    [SerializeField] private float speed = 5.0f;
-    [SerializeField] private float jumpForce = 1.0f;
+    [SerializeField] internal float speed = 5.0f;
+    [SerializeField] internal float jumpForce = 1.0f;
+    private float prevGravity;
 
     private Rigidbody2D rigidBody;
     private Animator charAnimator;
@@ -18,6 +19,10 @@ public class CharacterController2D : MonoBehaviour
     private ContactFilter2D filter2D;
     [SerializeField] private float filterMinAngle = 89.0f;
     [SerializeField] private float filterMaxAngle = 91.0f;
+
+    [SerializeField] private float wallJumpMultiplier = 2.0f;
+    [SerializeField] private float wallJumpTimerRecharger = 0.2f;
+    private float wallJumpTimer = 0.0f;
 
     private CharacterAnimationState state = default;
 
@@ -44,6 +49,37 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
+    private bool isTouchingWalls
+    {
+        get
+        {
+            int countR;
+            int countL;
+            WallTouchFiltering(out countR, out countL);
+
+            return (countR > 0 || countL > 0);
+        }
+    }
+
+    private void WallTouchFiltering(out int countR, out int countL)
+    {
+        List<Collider2D> colliders = new List<Collider2D>();
+
+        ContactFilter2D right = default;
+        right.SetNormalAngle(-1.0f, 1.0f);
+        right.useNormalAngle = true;
+        countR = rigidBody.GetContacts(right, colliders);
+
+        ContactFilter2D left = default;
+        left.SetNormalAngle(179.0f, 181.0f);
+        left.useNormalAngle = true;
+        colliders = new List<Collider2D>();
+        countL = rigidBody.GetContacts(left, colliders);
+    }
+
+    private bool isGrabbingWall { get; set; }
+
+
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody2D>();
@@ -53,6 +89,7 @@ public class CharacterController2D : MonoBehaviour
         colliders2D = new List<Collider2D>();
         filter2D.SetNormalAngle(filterMinAngle, filterMaxAngle);
         filter2D.useNormalAngle = true;
+        prevGravity = rigidBody.gravityScale;
     }
 
     private void OnEnable()
@@ -64,7 +101,14 @@ public class CharacterController2D : MonoBehaviour
     {
         if (!State.Equals(CharacterAnimationState.Die))
         {
-            CharacterMovement();
+            if (wallJumpTimer <= 0)
+            {
+                CharacterMovement();
+            }
+            else
+            {
+                wallJumpTimer -= Time.fixedDeltaTime;
+            }
         }
     }
 
@@ -93,19 +137,49 @@ public class CharacterController2D : MonoBehaviour
             }
         }
 
-        if(GetComponent<CharacterStickToWalls>().isStickToWall && !IsGrounded)
-        {
-            if(jumpAxis > 0 && State.Equals(CharacterAnimationState.Jump))
-            {
-                State = CharacterAnimationState.Idle;
-                velocity.y += Vector2.up.y * jumpAxis * jumpForce;
-            }
-        }
 
         ChangeAnimationStateOnMovement(velocity.x);
         rigidBody.velocity = velocity;
+        StickToWall();
     }
 
+    private void StickToWall()
+    {
+        isGrabbingWall = false;
+        if (isTouchingWalls && !IsGrounded)
+        {
+            if (Input.GetAxisRaw("Horizontal") > 0)
+            {
+                isGrabbingWall = true;
+            }
+            if (Input.GetAxisRaw("Horizontal") < 0)
+            {
+                isGrabbingWall = true;
+            }
+
+            rigidBody.gravityScale = 0.0f;
+        }
+
+        if (isGrabbingWall)
+        {
+            rigidBody.velocity = Vector2.zero;
+
+            if (Input.GetButtonDown("Jump"))
+            {
+                wallJumpTimer = wallJumpTimerRecharger;
+
+                rigidBody.velocity = new Vector2(Input.GetAxis("Horizontal") * speed * Vector3.right.x, jumpForce * Vector2.up.y);
+                rigidBody.velocity *= wallJumpMultiplier;
+                rigidBody.gravityScale = prevGravity;
+                isGrabbingWall = false;
+            }
+        }
+        else
+        {
+            rigidBody.gravityScale = prevGravity;
+        }
+
+    }
 
     private void ChangeAnimationStateOnMovement(float horizontalVelocity)
     {

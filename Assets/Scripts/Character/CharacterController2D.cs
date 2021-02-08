@@ -86,17 +86,27 @@ namespace Platformer.Character.Controller2D
 
         void FixedUpdate()
         {
+            if (State.Equals(CharacterAnimationState.Win))
+            {
+                Debug.Log(State);
+            }
+
             if (!State.Equals(CharacterAnimationState.Die))
             {
-                if (wallJumpTimer <= 0)
+                if(!State.Equals(CharacterAnimationState.Win))
                 {
-                    CharacterMovement();
+                    if (wallJumpTimer <= 0)
+                    {
+                        CharacterMovement();
+                    }
+                    else
+                    {
+                        wallJumpTimer -= Time.fixedDeltaTime;
+                    }
                 }
-                else
-                {
-                    wallJumpTimer -= Time.fixedDeltaTime;
-                }
+                
             }
+            //Debug.Log(State);
         }
 
         private void WallTouchFiltering(out int countR, out int countL)
@@ -213,9 +223,14 @@ namespace Platformer.Character.Controller2D
             {
                 State = CharacterAnimationState.Die;
             }
-            else if (collision.transform.tag.Equals("Enemy"))
+            if (collision.transform.tag.Equals("Enemy"))
             {
                 State = CharacterAnimationState.Die;
+            }
+            if (collision.transform.tag.Equals("Collectable"))
+            {
+                Debug.Log("Collectable!");
+                State = CharacterAnimationState.Win;
             }
         }
 

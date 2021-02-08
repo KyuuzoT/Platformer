@@ -12,6 +12,7 @@ namespace Platformer.Character.Controller2D
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
+            Debug.Log($"Die: {DyingAction}, Win: {WinAction}");
             if (stateInfo.IsName("Die"))
             {
                 DyingAction.Invoke();

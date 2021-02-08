@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CharacterAnimationState
+namespace Platformer.Character.Controller2D
 {
-    Idle = 0,
-    Run = 1,
-    Jump = 2,
-    Die = 3
+    internal enum CharacterAnimationState
+    {
+        Idle = 0,
+        Run = 1,
+        Jump = 2,
+        Die = 3
+    }
 }

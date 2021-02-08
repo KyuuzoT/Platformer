@@ -18572,7 +18572,7 @@ PrefabInstance:
     - target: {fileID: 8988703659051243198, guid: 655ad5ff4df70fd4e91f36db65063259,
         type: 3}
       propertyPath: wallJumpTimerRecharger
-      value: 0.2
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 8988703659051243199, guid: 655ad5ff4df70fd4e91f36db65063259,
         type: 3}

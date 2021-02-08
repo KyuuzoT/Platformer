@@ -81,6 +81,7 @@ namespace Platformer.Character.Controller2D
         private void OnEnable()
         {
             charAnimator.GetBehaviour<CharacterAnimationCallback>().DyingAction = OnDying;
+            charAnimator.GetBehaviour<CharacterAnimationCallback>().WinAction = OnWinning;
         }
 
         void FixedUpdate()

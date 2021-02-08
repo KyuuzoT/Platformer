@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 namespace Platformer.Character.Controller2D
 {
@@ -211,12 +212,27 @@ namespace Platformer.Character.Controller2D
             {
                 State = CharacterAnimationState.Die;
             }
+            else if (collision.transform.tag.Equals("Enemy"))
+            {
+                State = CharacterAnimationState.Die;
+            }
         }
 
         internal void OnDying()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-    }
 
+        internal void OnWinning()
+        {
+            int sceneIndex = Random.Range(0, SceneManager.sceneCount);
+
+            while(sceneIndex.Equals(SceneManager.GetActiveScene().buildIndex))
+            {
+                sceneIndex = Random.Range(0, SceneManager.sceneCount);
+            }
+
+            SceneManager.LoadScene(SceneManager.GetSceneAt(sceneIndex).buildIndex);
+        }
+    }
 }

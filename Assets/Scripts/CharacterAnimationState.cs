@@ -9,6 +9,7 @@ namespace Platformer.Character.Controller2D
         Idle = 0,
         Run = 1,
         Jump = 2,
-        Die = 3
+        Die = 3,
+        Win = 4
     }
 }

@@ -32,7 +32,7 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
-    private bool IsGrounded
+    internal bool IsGrounded
     {
         get
         {
@@ -60,12 +60,6 @@ public class CharacterController2D : MonoBehaviour
         charAnimator.GetBehaviour<CharacterAnimationCallback>().DyingAction = OnDying;
     }
 
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
     void FixedUpdate()
     {
         if (!State.Equals(CharacterAnimationState.Die))
@@ -99,6 +93,14 @@ public class CharacterController2D : MonoBehaviour
             }
         }
 
+        if(GetComponent<CharacterStickToWalls>().isStickToWall && !IsGrounded)
+        {
+            if(jumpAxis > 0 && State.Equals(CharacterAnimationState.Jump))
+            {
+                State = CharacterAnimationState.Idle;
+                velocity.y += Vector2.up.y * jumpAxis * jumpForce;
+            }
+        }
 
         ChangeAnimationStateOnMovement(velocity.x);
         rigidBody.velocity = velocity;

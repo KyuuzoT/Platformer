@@ -18,6 +18,8 @@ namespace Platformer.Character.Controller2D
         private Animator charAnimator;
         private SpriteRenderer charRenderer;
 
+        [SerializeField] private SceneManager nextScene;
+
         private List<Collider2D> colliders2D;
         private ContactFilter2D filter2D;
         [SerializeField] private float filterMinAngle = 89.0f;
@@ -81,19 +83,14 @@ namespace Platformer.Character.Controller2D
         private void OnEnable()
         {
             charAnimator.GetBehaviour<CharacterAnimationCallback>().DyingAction = OnDying;
-            charAnimator.GetBehaviour<CharacterAnimationCallback>().WinAction = OnWinning;
+            charAnimator.GetBehaviour<WinAnimationCallback>().WinAction = OnWinning;
         }
 
         void FixedUpdate()
         {
-            if (State.Equals(CharacterAnimationState.Win))
-            {
-                Debug.Log(State);
-            }
-
             if (!State.Equals(CharacterAnimationState.Die))
             {
-                if(!State.Equals(CharacterAnimationState.Win))
+                if (!State.Equals(CharacterAnimationState.Win))
                 {
                     if (wallJumpTimer <= 0)
                     {
@@ -104,7 +101,7 @@ namespace Platformer.Character.Controller2D
                         wallJumpTimer -= Time.fixedDeltaTime;
                     }
                 }
-                
+
             }
             //Debug.Log(State);
         }
@@ -229,7 +226,6 @@ namespace Platformer.Character.Controller2D
             }
             if (collision.transform.tag.Equals("Collectable"))
             {
-                Debug.Log("Collectable!");
                 State = CharacterAnimationState.Win;
             }
         }
@@ -241,14 +237,14 @@ namespace Platformer.Character.Controller2D
 
         internal void OnWinning()
         {
-            int sceneIndex = Random.Range(0, SceneManager.sceneCount);
-
-            while(sceneIndex.Equals(SceneManager.GetActiveScene().buildIndex))
+            if (SceneManager.GetActiveScene().buildIndex >= SceneManager.sceneCountInBuildSettings - 1)
             {
-                sceneIndex = Random.Range(0, SceneManager.sceneCount);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
             }
-
-            SceneManager.LoadScene(SceneManager.GetSceneAt(sceneIndex).buildIndex);
+            else
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            }
         }
     }
 }

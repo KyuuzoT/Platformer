@@ -300,7 +300,7 @@ PrefabInstance:
     - target: {fileID: 2108505402259129864, guid: 96e275c8a4123724caedb1f54286d2e9,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2108505402259129910, guid: 96e275c8a4123724caedb1f54286d2e9,
         type: 3}
@@ -711,7 +711,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 91a6f4c9b969b4bb9866c25cba77273c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -18666,6 +18666,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 8988703659051243198, guid: 655ad5ff4df70fd4e91f36db65063259,
+        type: 3}
+      propertyPath: nextScene.m_Handle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8988703659051243199, guid: 655ad5ff4df70fd4e91f36db65063259,
         type: 3}
       propertyPath: m_RootOrder
@@ -18674,12 +18679,12 @@ PrefabInstance:
     - target: {fileID: 8988703659051243199, guid: 655ad5ff4df70fd4e91f36db65063259,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 49
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 8988703659051243199, guid: 655ad5ff4df70fd4e91f36db65063259,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8988703659051243199, guid: 655ad5ff4df70fd4e91f36db65063259,
         type: 3}
